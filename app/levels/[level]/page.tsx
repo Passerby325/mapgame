@@ -7,6 +7,15 @@ import MazeGame from '../../../components/MazeGame';
 import { generateMaze } from '../../../utils/mazeGenerator';
 import { MazeType } from '../../../types/maze';
 
+// 定义关卡配置
+const levelConfigs = {
+  1: { complexity: 0.8 },  // 简单 - 更多路径
+  2: { complexity: 0.85 }, // 较简单
+  3: { complexity: 0.9 },  // 中等
+  4: { complexity: 0.95 }, // 困难
+  5: { complexity: 0.98 }  // 很困难 - 很少额外路径
+};
+
 export default function LevelPage() {
   const params = useParams();
   const router = useRouter();
@@ -15,7 +24,25 @@ export default function LevelPage() {
 
   useEffect(() => {
     if (level >= 1 && level <= 5) {
-      setMaze(generateMaze(10));
+      // 使用固定种子确保每个关卡生成相同的迷宫
+      const seed = level * 1000;
+      let seedValue = seed;
+      const originalRandom = Math.random;
+      
+      // 替换随机数生成器
+      Math.random = () => {
+        seedValue = (seedValue * 9301 + 49297) % 233280;
+        return seedValue / 233280;
+      };
+
+      // 使用关卡配置生成迷宫
+      const config = levelConfigs[level as keyof typeof levelConfigs];
+      const newMaze = generateMaze(10, config.complexity);
+      
+      // 恢复原始随机数生成器
+      Math.random = originalRandom;
+      
+      setMaze(newMaze);
     }
   }, [level]);
 

@@ -1,6 +1,9 @@
 import { CellType, MazeType, Position } from '../types/maze';
 
-export function generateMaze(size: number = 10): MazeType {
+export function generateMaze(size: number = 10, complexity: number = 0.5): MazeType {
+  // 添加复杂度参数来影响迷宫生成
+  const shouldAddPath = () => Math.random() > complexity;
+  
   // 初始化迷宫网格
   const grid: CellType[][] = Array(size).fill(null).map(() =>
     Array(size).fill(null).map(() => ({
@@ -46,6 +49,29 @@ export function generateMaze(size: number = 10): MazeType {
     if (neighbors.length > 0) {
       const next = neighbors[Math.floor(Math.random() * neighbors.length)];
       stack.push(current);
+
+      // 根据复杂度可能添加额外路径
+      if (shouldAddPath()) {
+        const otherNeighbors = neighbors.filter(n => n !== next);
+        if (otherNeighbors.length > 0) {
+          const extraPath = otherNeighbors[Math.floor(Math.random() * otherNeighbors.length)];
+          // 添加额外路径
+          if (extraPath.x > current.x) {
+            grid[current.y][current.x].right = false;
+            grid[extraPath.y][extraPath.x].left = false;
+          } else if (extraPath.x < current.x) {
+            grid[current.y][current.x].left = false;
+            grid[extraPath.y][extraPath.x].right = false;
+          } else if (extraPath.y > current.y) {
+            grid[current.y][current.x].bottom = false;
+            grid[extraPath.y][extraPath.x].top = false;
+          } else {
+            grid[current.y][current.x].top = false;
+            grid[extraPath.y][extraPath.x].bottom = false;
+          }
+          grid[extraPath.y][extraPath.x].visited = true;
+        }
+      }
 
       // 移除墙壁
       if (next.x > current.x) {
