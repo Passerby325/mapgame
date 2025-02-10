@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { useAudio } from "../contexts/AudioContext"
 
 interface VolumeControlProps {
   type: "music" | "sound"
@@ -9,17 +10,22 @@ interface VolumeControlProps {
 
 export default function VolumeControl({ type, initialVolume }: VolumeControlProps) {
   const [volume, setVolume] = useState(initialVolume)
+  const { setVolume: setAudioVolume } = useAudio()
+
+  useEffect(() => {
+    const storedVolume = localStorage.getItem(`${type}Volume`)
+    if (storedVolume) {
+      setVolume(Number.parseFloat(storedVolume))
+    }
+  }, [type])
 
   useEffect(() => {
     localStorage.setItem(`${type}Volume`, volume.toString())
     if (type === "music") {
-      const audio = document.getElementById("backgroundMusic") as HTMLAudioElement
-      if (audio) {
-        audio.volume = volume
-      }
+      setAudioVolume(volume)
     }
     // 不需要在这里设置点击音效的音量，因为ClickSound组件会在每次播放时读取localStorage
-  }, [volume, type])
+  }, [volume, type, setAudioVolume])
 
   return (
     <div className="flex items-center space-x-2">

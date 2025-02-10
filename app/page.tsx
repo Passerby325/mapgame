@@ -2,35 +2,12 @@
 
 import Image from "next/image"
 import Link from "next/link"
-import { useEffect, useRef, useState } from "react"
 import { motion } from "framer-motion"
 import VolumeControl from "../components/VolumeControl"
-import { safePlayAudio, setupAudioContext } from "../utils/audio"
+import { useAudio } from "../contexts/AudioContext"
 
 export default function Home() {
-  const backgroundMusicRef = useRef<HTMLAudioElement>(null)
-  const [audioInitialized, setAudioInitialized] = useState(false)
-
-  useEffect(() => {
-    const musicVolume = localStorage.getItem("musicVolume") || "0.5"
-
-    if (backgroundMusicRef.current) {
-      backgroundMusicRef.current.volume = Number.parseFloat(musicVolume)
-    }
-
-    const audioContext = setupAudioContext()
-    setAudioInitialized(true)
-
-    return () => {
-      audioContext.close()
-    }
-  }, [])
-
-  const handleStartAudio = () => {
-    if (audioInitialized) {
-      safePlayAudio(backgroundMusicRef.current)
-    }
-  }
+  const { isPlaying, togglePlay } = useAudio()
 
   return (
     <div className="relative h-screen w-full overflow-hidden flex flex-col justify-between">
@@ -62,10 +39,10 @@ export default function Home() {
         className="relative z-10 flex flex-col items-center space-y-4 pb-20 sm:pb-32"
       >
         <button
-          onClick={handleStartAudio}
+          onClick={togglePlay}
           className="px-6 py-3 bg-green-500 text-white text-lg font-semibold rounded-full shadow-lg hover:bg-green-600 transition duration-300 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-50"
         >
-          开始背景音乐
+          {isPlaying ? "暂停背景音乐" : "开始背景音乐"}
         </button>
         <Link
           href="/levels"
@@ -85,10 +62,6 @@ export default function Home() {
         <VolumeControl type="music" initialVolume={0.5} />
         <VolumeControl type="sound" initialVolume={0.5} />
       </div>
-
-      <audio ref={backgroundMusicRef} loop>
-        <source src="/background-music.mp3" type="audio/mpeg" />
-      </audio>
     </div>
   )
 }
