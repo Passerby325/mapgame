@@ -1,7 +1,8 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { LoadingSpinner } from './LoadingSpinner';
-import { DirectionalControls } from './DirectionalControls';
+// import { DirectionalControls } from './DirectionalControls';
 import { useKeyboardControls } from '../hooks/useKeyboardControls';
+import { DirectionalControls } from './DirectionalControls';
 
 interface Player {
   x: number;
@@ -116,6 +117,14 @@ export const Game = () => {
     };
   }, [calculateCanvasSize]);
 
+  useEffect(() => {
+    console.log('游戏状态:', {
+      gameStarted,
+      isLoading,
+      shouldShowControls: gameStarted && !isLoading
+    });
+  }, [gameStarted, isLoading]);
+
   return (
     <div className="relative w-full h-screen flex flex-col items-center justify-center bg-gray-900">
       {/* 加载动画 */}
@@ -162,7 +171,7 @@ export const Game = () => {
       </div>
 
       {/* 方向控制按钮 */}
-      {gameStarted && !isLoading && (
+      {true && ( // 强制显示
         <DirectionalControls 
           onMove={handleMove}
           disabled={!gameStarted}

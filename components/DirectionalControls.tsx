@@ -13,7 +13,7 @@ export const DirectionalControls = ({ onMove, disabled }: DirectionalControlsPro
   };
 
   return (
-    <div className="fixed bottom-4 left-4 touch-none">
+    <div className="fixed bottom-4 left-4 touch-none z-50 border-4 border-red-500 bg-yellow-300/50 p-2">
       {/* 方向键容器 */}
       <div className="relative w-32 h-32">
         {/* 上方向键 */}
