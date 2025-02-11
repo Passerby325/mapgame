@@ -1,45 +1,117 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { LoadingSpinner } from './LoadingSpinner';
 import { DirectionalControls } from './DirectionalControls';
+import { useKeyboardControls } from '../hooks/useKeyboardControls';
+
+interface Player {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  speed: number;
+}
 
 export const Game = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [gameStarted, setGameStarted] = useState(false);
   const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 });
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const playerRef = useRef<Player>({
+    x: 0,
+    y: 0,
+    width: 30,
+    height: 30,
+    speed: 5
+  });
+  const animationFrameRef = useRef<number>();
   
   // 计算画布大小
   const calculateCanvasSize = useCallback(() => {
-    const width = Math.min(window.innerWidth * 0.9, 800); // 最大宽度800px
-    const height = Math.min(window.innerHeight * 0.6, 600); // 最大高度600px
+    const width = Math.min(window.innerWidth * 0.9, 800);
+    const height = Math.min(window.innerHeight * 0.6, 600);
     setCanvasSize({ width, height });
+    
+    // 重置玩家位置到中心
+    if (playerRef.current) {
+      playerRef.current.x = width / 2 - playerRef.current.width / 2;
+      playerRef.current.y = height / 2 - playerRef.current.height / 2;
+    }
   }, []);
 
-  // 监听窗口大小变化
+  // 处理移动
+  const handleMove = useCallback((direction: 'up' | 'down' | 'left' | 'right') => {
+    if (!gameStarted || !playerRef.current) return;
+
+    const player = playerRef.current;
+    const speed = player.speed;
+
+    switch (direction) {
+      case 'up':
+        player.y = Math.max(0, player.y - speed);
+        break;
+      case 'down':
+        player.y = Math.min(canvasSize.height - player.height, player.y + speed);
+        break;
+      case 'left':
+        player.x = Math.max(0, player.x - speed);
+        break;
+      case 'right':
+        player.x = Math.min(canvasSize.width - player.width, player.x + speed);
+        break;
+    }
+  }, [gameStarted, canvasSize]);
+
+  // 使用键盘控制
+  useKeyboardControls({
+    onMove: handleMove,
+    enabled: gameStarted
+  });
+
+  // 绘制游戏画面
+  const drawGame = useCallback(() => {
+    const canvas = canvasRef.current;
+    const ctx = canvas?.getContext('2d');
+    if (!canvas || !ctx || !playerRef.current) return;
+
+    // 清空画布
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // 绘制玩家
+    const player = playerRef.current;
+    ctx.fillStyle = 'white';
+    ctx.fillRect(player.x, player.y, player.width, player.height);
+
+    // 继续动画循环
+    animationFrameRef.current = requestAnimationFrame(drawGame);
+  }, []);
+
+  // 开始游戏
+  const handleStartGame = useCallback(() => {
+    setGameStarted(true);
+    // 重置玩家位置
+    if (playerRef.current && canvasSize.width && canvasSize.height) {
+      playerRef.current.x = canvasSize.width / 2 - playerRef.current.width / 2;
+      playerRef.current.y = canvasSize.height / 2 - playerRef.current.height / 2;
+    }
+    // 开始游戏循环
+    animationFrameRef.current = requestAnimationFrame(drawGame);
+  }, [drawGame, canvasSize]);
+
+  // 初始化和清理
   useEffect(() => {
     calculateCanvasSize();
     window.addEventListener('resize', calculateCanvasSize);
     
-    // 模拟资源加载
     const timer = setTimeout(() => setIsLoading(false), 1000);
     
     return () => {
       window.removeEventListener('resize', calculateCanvasSize);
       clearTimeout(timer);
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
     };
   }, [calculateCanvasSize]);
-
-  // 处理移动
-  const handleMove = useCallback((direction: 'up' | 'down' | 'left' | 'right') => {
-    if (!gameStarted) return;
-    
-    // 这里添加移动逻辑
-    console.log(`Moving ${direction}`);
-  }, [gameStarted]);
-
-  // 处理开始游戏
-  const handleStartGame = () => {
-    setGameStarted(true);
-  };
 
   return (
     <div className="relative w-full h-screen flex flex-col items-center justify-center bg-gray-900">
@@ -52,14 +124,13 @@ export const Game = () => {
           height: canvasSize.height
         }}
       >
-        {/* 游戏画布 */}
         <canvas
+          ref={canvasRef}
           width={canvasSize.width}
           height={canvasSize.height}
           className="absolute top-0 left-0"
         />
         
-        {/* 开始按钮 */}
         {!gameStarted && !isLoading && (
           <div className="absolute inset-0 flex items-center justify-center bg-black/70">
             <button
