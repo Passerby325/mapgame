@@ -13,48 +13,50 @@ export const DirectionalControls = ({ onMove, disabled }: DirectionalControlsPro
   };
 
   return (
-    <div className="fixed bottom-4 left-4 touch-none z-50 border-4 border-red-500 bg-yellow-300/50 p-2">
-      {/* 方向键容器 */}
-      <div className="relative w-32 h-32">
-        {/* 上方向键 */}
-        <button
-          className="absolute top-0 left-1/2 -translate-x-1/2 w-12 h-12 bg-gray-700/50 rounded-full active:bg-gray-600 flex items-center justify-center"
-          onTouchStart={handleTouchStart('up')}
-          disabled={disabled}
-          aria-label="向上移动"
-        >
-          <span className="text-white text-2xl">↑</span>
-        </button>
+    <div className="fixed bottom-20 left-4 touch-none z-[9999]">
+      <div className="relative w-40 h-40 bg-gray-800/20 rounded-full">
+        {/* 方向键容器 */}
+        <div className="relative w-32 h-32">
+          {/* 上方向键 */}
+          <button
+            className="absolute top-0 left-1/2 -translate-x-1/2 w-12 h-12 bg-gray-700/50 rounded-full active:bg-gray-600 flex items-center justify-center"
+            onTouchStart={handleTouchStart('up')}
+            disabled={disabled}
+            aria-label="向上移动"
+          >
+            <span className="text-white text-2xl">↑</span>
+          </button>
 
-        {/* 左方向键 */}
-        <button
-          className="absolute top-1/2 left-0 -translate-y-1/2 w-12 h-12 bg-gray-700/50 rounded-full active:bg-gray-600 flex items-center justify-center"
-          onTouchStart={handleTouchStart('left')}
-          disabled={disabled}
-          aria-label="向左移动"
-        >
-          <span className="text-white text-2xl">←</span>
-        </button>
+          {/* 左方向键 */}
+          <button
+            className="absolute top-1/2 left-0 -translate-y-1/2 w-12 h-12 bg-gray-700/50 rounded-full active:bg-gray-600 flex items-center justify-center"
+            onTouchStart={handleTouchStart('left')}
+            disabled={disabled}
+            aria-label="向左移动"
+          >
+            <span className="text-white text-2xl">←</span>
+          </button>
 
-        {/* 下方向键 */}
-        <button
-          className="absolute bottom-0 left-1/2 -translate-x-1/2 w-12 h-12 bg-gray-700/50 rounded-full active:bg-gray-600 flex items-center justify-center"
-          onTouchStart={handleTouchStart('down')}
-          disabled={disabled}
-          aria-label="向下移动"
-        >
-          <span className="text-white text-2xl">↓</span>
-        </button>
+          {/* 下方向键 */}
+          <button
+            className="absolute bottom-0 left-1/2 -translate-x-1/2 w-12 h-12 bg-gray-700/50 rounded-full active:bg-gray-600 flex items-center justify-center"
+            onTouchStart={handleTouchStart('down')}
+            disabled={disabled}
+            aria-label="向下移动"
+          >
+            <span className="text-white text-2xl">↓</span>
+          </button>
 
-        {/* 右方向键 */}
-        <button
-          className="absolute top-1/2 right-0 -translate-y-1/2 w-12 h-12 bg-gray-700/50 rounded-full active:bg-gray-600 flex items-center justify-center"
-          onTouchStart={handleTouchStart('right')}
-          disabled={disabled}
-          aria-label="向右移动"
-        >
-          <span className="text-white text-2xl">→</span>
-        </button>
+          {/* 右方向键 */}
+          <button
+            className="absolute top-1/2 right-0 -translate-y-1/2 w-12 h-12 bg-gray-700/50 rounded-full active:bg-gray-600 flex items-center justify-center"
+            onTouchStart={handleTouchStart('right')}
+            disabled={disabled}
+            aria-label="向右移动"
+          >
+            <span className="text-white text-2xl">→</span>
+          </button>
+        </div>
       </div>
     </div>
   );
