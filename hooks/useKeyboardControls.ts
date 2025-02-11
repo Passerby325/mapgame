@@ -7,6 +7,7 @@ interface KeyboardControlsProps {
 
 export const useKeyboardControls = ({ onMove, enabled }: KeyboardControlsProps) => {
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
+    console.log('按键事件:', e.key, '启用状态:', enabled);
     if (!enabled) return;
     
     switch (e.key) {

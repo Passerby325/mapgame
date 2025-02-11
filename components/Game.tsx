@@ -40,8 +40,9 @@ export const Game = () => {
   }, []);
 
   // 处理移动
-  const handleMove = useCallback((direction: 'up' | 'down' | 'left' | 'right') => {
-    if (!gameStarted || !playerRef.current) return;
+  const handleMove = useCallback((direction) => {
+    console.log('收到移动指令:', direction);
+    if (!gameStarted || isLoading) return;
 
     const player = playerRef.current;
     const speed = player.speed;
@@ -60,12 +61,18 @@ export const Game = () => {
         player.x = Math.min(canvasSize.width - player.width, player.x + speed);
         break;
     }
-  }, [gameStarted, canvasSize]);
+
+    // 添加移动动画
+    const step = () => {
+      animationFrameRef.current = requestAnimationFrame(step);
+    };
+    animationFrameRef.current = requestAnimationFrame(step);
+  }, [gameStarted, isLoading, canvasSize]);
 
   // 使用键盘控制
   useKeyboardControls({
     onMove: handleMove,
-    enabled: gameStarted
+    enabled: gameStarted && !isLoading
   });
 
   // 绘制游戏画面
@@ -88,6 +95,7 @@ export const Game = () => {
 
   // 开始游戏
   const handleStartGame = useCallback(() => {
+    console.log('游戏开始，当前状态:', { gameStarted });
     setGameStarted(true);
     // 重置玩家位置
     if (playerRef.current && canvasSize.width && canvasSize.height) {
@@ -124,6 +132,15 @@ export const Game = () => {
       shouldShowControls: gameStarted && !isLoading
     });
   }, [gameStarted, isLoading]);
+
+  useEffect(() => {
+    if (gameStarted) {
+      console.log('游戏已开始，等待操作...');
+      // 重置玩家位置
+      playerRef.current.x = canvasSize.width / 2;
+      playerRef.current.y = canvasSize.height / 2;
+    }
+  }, [gameStarted]);
 
   return (
     <div className="relative w-full h-screen flex flex-col items-center justify-center bg-gray-900">
@@ -171,10 +188,11 @@ export const Game = () => {
       </div>
 
       {/* 方向控制按钮 */}
-      {true && ( // 强制显示
+      {gameStarted && !isLoading && (
         <DirectionalControls 
           onMove={handleMove}
           disabled={!gameStarted}
+          className="debug-controls"
         />
       )}
 

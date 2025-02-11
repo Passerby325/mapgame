@@ -13,7 +13,7 @@ export const DirectionalControls = ({ onMove, disabled }: DirectionalControlsPro
   };
 
   return (
-    <div className="fixed bottom-20 left-4 touch-none z-[9999]">
+    <div className="fixed bottom-20 left-4 touch-none z-[100] flex gap-2 p-2 bg-gray-800/50 backdrop-blur rounded-xl">
       <div className="relative w-40 h-40 bg-gray-800/20 rounded-full">
         {/* 方向键容器 */}
         <div className="relative w-32 h-32">
