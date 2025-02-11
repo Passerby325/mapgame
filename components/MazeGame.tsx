@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { MazeType, Position, GameState } from '../types/maze';
 import { motion } from 'framer-motion';
+import { useAudio } from '../contexts/AudioContext'
 
 type MazeGameProps = {
   maze: MazeType;
@@ -8,6 +9,8 @@ type MazeGameProps = {
 };
 
 export default function MazeGame({ maze, onComplete }: MazeGameProps) {
+  const { playSound } = useAudio()
+  
   const [gameState, setGameState] = useState<GameState>({
     currentPosition: maze.start,
     steps: 0,
@@ -50,6 +53,9 @@ export default function MazeGame({ maze, onComplete }: MazeGameProps) {
     }
 
     if (canMove) {
+      // 播放移动音效
+      playSound('move')
+      
       setGameState(prev => {
         const newState = {
           ...prev,
@@ -58,12 +64,17 @@ export default function MazeGame({ maze, onComplete }: MazeGameProps) {
         };
 
         if (newPosition.x === maze.end.x && newPosition.y === maze.end.y) {
+          // 播放完成音效
+          playSound('complete')
           newState.completed = true;
           onComplete(newState.steps);
         }
 
         return newState;
       });
+    } else {
+      // 播放碰壁音效
+      playSound('bump')
     }
   };
 

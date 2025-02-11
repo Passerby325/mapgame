@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 import MazeGame from '../../../components/MazeGame';
 import { generateMaze } from '../../../utils/mazeGenerator';
 import { MazeType } from '../../../types/maze';
+import VolumeControl from '../../../components/VolumeControl'
 
 // 定义关卡配置
 const levelConfigs = {
@@ -55,6 +56,11 @@ export default function LevelPage() {
 
   return (
     <div className="min-h-screen bg-gray-900 flex flex-col items-center justify-center p-4">
+      <div className="absolute top-4 right-4 space-y-2">
+        <VolumeControl type="music" initialVolume={0.5} />
+        <VolumeControl type="sound" initialVolume={0.5} />
+      </div>
+
       <motion.h1
         initial={{ opacity: 0, y: -50 }}
         animate={{ opacity: 1, y: 0 }}

@@ -9,7 +9,7 @@ interface LevelButtonProps {
 
 export default function LevelButton({ level }: LevelButtonProps) {
   return (
-    <Link href={`/game/${level}`} className="block">
+    <Link href={`/levels/${level}`} className="block">
       <motion.button
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
