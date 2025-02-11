@@ -14,7 +14,7 @@ interface Player {
 export const Game = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [gameStarted, setGameStarted] = useState(false);
-  const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 });
+  const [canvasSize, setCanvasSize] = useState({ width: 800, height: 600 }); // 设置默认尺寸
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const playerRef = useRef<Player>({
     x: 0,
@@ -99,10 +99,13 @@ export const Game = () => {
 
   // 初始化和清理
   useEffect(() => {
-    calculateCanvasSize();
+    calculateCanvasSize(); // 立即执行一次初始化
     window.addEventListener('resize', calculateCanvasSize);
     
-    const timer = setTimeout(() => setIsLoading(false), 1000);
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+      calculateCanvasSize(); // 加载完成后再次计算尺寸
+    }, 1000);
     
     return () => {
       window.removeEventListener('resize', calculateCanvasSize);
@@ -115,13 +118,16 @@ export const Game = () => {
 
   return (
     <div className="relative w-full h-screen flex flex-col items-center justify-center bg-gray-900">
+      {/* 加载动画 */}
       {isLoading && <LoadingSpinner />}
       
+      {/* 游戏画布容器 */}
       <div 
         className="relative bg-black rounded-lg overflow-hidden"
         style={{ 
           width: canvasSize.width,
-          height: canvasSize.height
+          height: canvasSize.height,
+          transition: 'all 0.3s ease' // 添加过渡动画
         }}
       >
         <canvas
@@ -131,6 +137,7 @@ export const Game = () => {
           className="absolute top-0 left-0"
         />
         
+        {/* 开始按钮 */}
         {!gameStarted && !isLoading && (
           <div className="absolute inset-0 flex items-center justify-center bg-black/70">
             <button
