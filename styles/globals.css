@@ -92,3 +92,9 @@ body {
     @apply bg-background text-foreground;
   }
 }
+@media (pointer: coarse) {
+  button {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+}
